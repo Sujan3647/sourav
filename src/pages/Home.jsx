@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { FaSearch, FaShoppingCart, FaTimes } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaSearch, FaShoppingBag, FaTimes } from 'react-icons/fa';
 
-// Category Components
+// Components
 import Women from '../components/Women';
 import Men from '../components/Men';
 import Kids from '../components/Kids';
@@ -12,10 +12,27 @@ import GroceryKitchen from '../components/GroceryKitchen';
 import Household from '../components/Household';
 import SnacksDrinks from '../components/SnacksDrinks';
 
+const bannerImages = [
+  '/assets/banner1.png',
+  '/assets/banner2.png',
+  '/assets/banner3.png',
+  '/assets/banner4.png',
+  '/assets/banner5.png',
+  '/assets/banner6.png',
+];
+
+const adImages = [
+  'https://via.placeholder.com/600x100?text=Fashion+Sale',
+  'https://via.placeholder.com/600x100?text=Electronics+Deals',
+];
+
 export default function Home() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [notification, setNotification] = useState('');
+  const [bannerIndex, setBannerIndex] = useState(0);
+  const [adIndex, setAdIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const addToCart = (product) => {
     if (cart.length >= 20) {
@@ -38,9 +55,23 @@ export default function Home() {
     setTimeout(() => setNotification(''), 2000);
   };
 
+  useEffect(() => {
+    const bannerTimer = setInterval(() => {
+      setBannerIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 4000);
+
+    const adTimer = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % adImages.length);
+    }, 6000);
+
+    return () => {
+      clearInterval(bannerTimer);
+      clearInterval(adTimer);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 px-4 pt-4 pb-24 relative">
-
       {/* Notification */}
       {notification && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-sm px-4 py-2 rounded-xl shadow-md z-50 transition-all duration-300">
@@ -49,37 +80,60 @@ export default function Home() {
       )}
 
       {/* Top Bar */}
-      <div className="sticky top-0 bg-white z-40 py-3 mb-4 shadow-md flex items-center gap-4 px-2 rounded-b-xl">
-        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full shadow-inner">
-          <FaSearch className="text-gray-500 mr-2" />
+      <div className="sticky top-0 bg-white z-40 py-3 mb-4 shadow-md rounded-b-xl flex items-center justify-between px-2 gap-3">
+        {/* Beautified Search Bar */}
+        <div className="flex items-center w-full max-w-xl mx-auto relative">
           <input
             type="text"
-            placeholder="Search products..."
-            className="w-full bg-transparent text-sm focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for anything..."
+            className="w-full pl-12 pr-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-inner transition-all duration-300 text-sm md:text-base"
           />
+          <FaSearch className="absolute left-4 text-gray-500 text-sm md:text-base" />
         </div>
-        <div className="relative cursor-pointer" onClick={() => setShowCart(true)}>
-          <FaShoppingCart className="text-2xl text-indigo-600" />
+
+        {/* New Cart Icon */}
+        <button
+          onClick={() => setShowCart(true)}
+          className="relative flex items-center gap-2 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full shadow hover:bg-indigo-200 transition"
+        >
+          <FaShoppingBag className="text-lg" />
           {cart.length > 0 && (
-            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
               {cart.length}
             </span>
           )}
-        </div>
+        </button>
       </div>
 
-      {/* Banner */}
-      <div className="mb-5 space-y-3">
-        <img
-          src="https://via.placeholder.com/600x200"
-          alt="Banner"
-          className="w-full h-40 object-cover rounded-xl shadow-sm"
-        />
-        <img
-          src="https://via.placeholder.com/600x100"
-          alt="Ad"
-          className="w-full h-24 object-cover rounded-xl shadow-sm"
-        />
+      {/* Auto-scrolling Banners */}
+      <div className="mb-6 space-y-3">
+        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg">
+          {bannerImages.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`Banner ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover rounded-xl transition-opacity duration-1000 ease-in-out ${
+                index === bannerIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+        </div>
+
+        <div className="relative w-full h-24 md:h-28 lg:h-32 rounded-xl overflow-hidden shadow">
+          {adImages.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`Ad ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                index === adIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Scrollable Categories */}
@@ -108,7 +162,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Product Categories */}
+      {/* Product Sections */}
       <div className="space-y-8">
         <Women addToCart={addToCart} />
         <Men addToCart={addToCart} />
@@ -121,43 +175,56 @@ export default function Home() {
         <SnacksDrinks addToCart={addToCart} />
       </div>
 
-      {/* Cart Modal */}
-      {showCart && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center px-4 transition-all">
-          <div className="bg-white rounded-xl p-4 w-full max-w-md shadow-lg animate-fade-down relative">
+      {/* Slide-in Cart Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 max-w-full bg-white shadow-xl z-50 transform transition-transform duration-500 ease-in-out ${
+          showCart ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="p-4 h-full flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-indigo-600">🛒 Your Cart</h2>
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+              className="text-gray-500 hover:text-red-500 transition"
               onClick={() => setShowCart(false)}
             >
-              <FaTimes />
+              <FaTimes className="text-lg" />
             </button>
-            <h2 className="text-lg font-bold mb-4 text-indigo-700">🛒 Your Cart</h2>
-            {cart.length === 0 ? (
-              <p className="text-sm text-gray-500">Your cart is empty.</p>
-            ) : (
-              <ul className="space-y-2 max-h-60 overflow-y-auto">
-                {cart.map((item, idx) => (
-                  <li
-                    key={idx}
-                    className="flex justify-between items-center border-b pb-1 text-sm"
-                  >
-                    <span className="text-gray-800 truncate w-32">{item.name}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-indigo-600 font-semibold text-sm">₹{item.price}</span>
-                      <button
-                        onClick={() => removeFromCart(idx)}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
+
+          {cart.length === 0 ? (
+            <p className="text-sm text-gray-500">Your cart is empty.</p>
+          ) : (
+            <ul className="space-y-3 overflow-y-auto flex-1">
+              {cart.map((item, idx) => (
+                <li
+                  key={idx}
+                  className="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm"
+                >
+                  <div className="w-40 truncate">
+                    <p className="text-gray-800 text-sm font-medium truncate">{item.name}</p>
+                    <p className="text-indigo-600 text-sm font-semibold">₹{item.price}</p>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(idx)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {cart.length > 0 && (
+            <div className="mt-4">
+              <button className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                Proceed to Checkout
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
