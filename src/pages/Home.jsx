@@ -19,11 +19,20 @@ const bannerImages = [
   '/assets/banner4.png',
   '/assets/banner5.png',
   '/assets/banner6.png',
+  '/assets/banner7.png',
+  '/assets/banner8.png',
+  '/assets/banner9.png',
+  '/assets/banner10.png',
 ];
 
 const adImages = [
   'https://via.placeholder.com/600x100?text=Fashion+Sale',
   'https://via.placeholder.com/600x100?text=Electronics+Deals',
+  'https://via.placeholder.com/600x100?text=Grocery+Offers',
+  'https://via.placeholder.com/600x100?text=Beauty+Care+Promo',
+  'https://via.placeholder.com/600x100?text=Footwear+Discounts',
+  'https://via.placeholder.com/600x100?text=Kids+Toys+Deals',
+  'https://via.placeholder.com/600x100?text=New+Arrivals',
 ];
 
 export default function Home() {
